@@ -27,6 +27,7 @@ public:
     void insertEdge(const int& from, const int& to, const int& weight); // adds a new link between two nodes
     void printGraph();
     void numEdges();
+pair<double, vector<int>> findPaths(map<int, vector<pair<int, double>>> graph, int start, double distance, int curr_node, double& dist_traversed, vector<int> &curr_path, vector<pair<double, vector<int>>> &paths, map<int, bool> &visited, int &step_count, double &bound_factor);
 
 };
 
