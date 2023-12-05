@@ -47,10 +47,10 @@ void AdjList::numEdges()
     cout << "Number of edges: " << tot << endl;
 }
 
+//DFS function
 pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>> &graph, int start, double distance, int curr_node,
                         double &dist_traversed, vector<int> &curr_path, vector<pair<double, vector<int>>> &paths,
                         map<int, bool> &visited, int &step_count, double &bound_factor) {
-
     //To be returned
     pair<double, vector<int>> best_path;
     //To recursively save distance traversed
@@ -104,10 +104,13 @@ pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>>
             step_count--;
         }
     }
+    //If no path was found
     if (paths.empty()) {
+        //Return a pair representing nothing
         return {0.0, {}};
     }
     else {
+        //Otherwise, the path closest to the target distance is the last added to the list
         return paths.back();
     }
 }
