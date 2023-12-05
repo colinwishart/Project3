@@ -2,13 +2,15 @@
 #include <vector>
 #include <tuple>
 #include <random>
-#include <iomanip>
 #include <functional>
 #include <chrono>
-#include "AdjList.cpp"
+#include "AdjList.h"
+#include <iomanip>
+#include <map>
 
 using namespace std;
 
+// generates random zero or one
 bool randBool() {
     // Seed the random number generator only once
     static std::mt19937 gen(std::time(0));
@@ -22,26 +24,27 @@ bool randBool() {
 
 vector<tuple<int, int, int>> generateData() {
 
-    // calculate density to have 100,000 edges for 15-mile radius
-    int dist = 10;
-    int grid[325][325] = {};
+    // generates grid of size dist
+    int dist = 100;
+    int grid[100][100] = {};
 
-    int row = 325;
-    int col = 325;
+    int row = dist;
+    int col = dist;
 
     for(int i = 0; i < row; i++)
     {
         for(int j = 0; j < col; j++)
         {
+
             bool rand = randBool();
             if(rand){
-                grid[i][j] = 325 * i + j + 1;
+                grid[i][j] = dist * i + j + 1;
             }
-            cout << setw(10) << grid[i][j] << " ";
+
+            cout << setw(5) << grid[i][j] << " ";
         }
         cout << "\n";
     }
-
     vector<tuple<int, int, int>> edges;
 
     for(int i = 0; i < row; i++)
@@ -53,7 +56,6 @@ vector<tuple<int, int, int>> generateData() {
             int py = 1;
             int ny = 1;
             if(grid[i][j] != 0) {
-                //cout << "{(" << j << "," << i << ")/" << grid[i][j] << "}, ";
                 while (true) {
                     if (i + py >= row) {
                         break;
@@ -97,15 +99,6 @@ vector<tuple<int, int, int>> generateData() {
             }
         }
     }
-    /*
-    for (const auto& edge : edges) {
-        int node1, node2, distance;
-        tie(node1, node2, distance) = edge;
-
-        cout << "Node " << node1 << " to Node " << node2
-             << ", Distance: " << distance << endl;
-    }
-     */
 
     return edges;
 }
@@ -130,7 +123,7 @@ int main() {
 
     map<int, bool> visited;
     int start;
-    double distance;
+    int distance;
 
 
     cout << "Enter start node: ";
@@ -154,14 +147,14 @@ int main() {
     vector<int> path;
     path.push_back(start);
 
-    vector<pair<double, vector<int>>> paths;
+    vector<pair<int, vector<int>>> paths;
 
-    double dist_traversed = 0.0;
+    int dist_traversed = 0.0;
     int step_count = 0;
     double bound_factor = 0.2;
 
     pair<double, vector<int>> best_path = graph.dfsLoop(graph.adjList, start, distance, start, dist_traversed, path, paths, visited, step_count, bound_factor);
-
+    cout << "DFS:" << endl;
     if (best_path.second.empty()) {
         cout << "No paths" << endl;
     }
@@ -175,6 +168,20 @@ int main() {
         }
         cout << "])" << endl;
     }
-
+    cout << "Dij: " << endl;
+    pair<int, vector<int>> loop = graph.dijLoop(start, distance);
+    if (loop.second.empty()) {
+        cout << "No paths" << endl;
+    }
+    else {
+        cout << "Best Path: (" << loop.first << ", [";
+        for (size_t i = 0; i < loop.second.size(); ++i) {
+            cout << loop.second[i];
+            if (i < loop.second.size() - 1) {
+                cout << ", ";
+            }
+        }
+        cout << "])" << endl;
+    }
     return 0;
 }
