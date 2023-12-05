@@ -1,9 +1,3 @@
-//
-// Created by Colin Wishart on 11/27/2023.
-//
-
-#include <iostream>
-#include <iomanip>
 #include "AdjList.h"
 
 AdjList::AdjList()
@@ -12,7 +6,7 @@ AdjList::AdjList()
 }
 
 // cited from lecture slides 8a (slide 56)
-void AdjList::insertEdge(const int& from, const int& to, const int& weight)
+void AdjList::insertEdge(const int& from, const int& to, const double& weight)
 {
     adjList[from].push_back(make_pair(to, weight)); // add from->to pair to adjList
 
@@ -47,10 +41,12 @@ void AdjList::numEdges()
     cout << "Number of edges: " << tot << endl;
 }
 
-//DFS function
-pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>> &graph, int start, double distance, int curr_node,
-                        double &dist_traversed, vector<int> &curr_path, vector<pair<double, vector<int>>> &paths,
-                        map<int, bool> &visited, int &step_count, double &bound_factor) {
+pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>> &graph, int start,
+                                             double distance, int curr_node, double &dist_traversed,
+                                             vector<int> &curr_path, vector<pair<double,
+        vector<int>>> &paths, map<int, bool> &visited,
+                                             int &step_count, double &bound_factor) {
+
     //To be returned
     pair<double, vector<int>> best_path;
     //To recursively save distance traversed
@@ -81,6 +77,7 @@ pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>>
             if (next == start && step_count <= 1) {
                 continue;
             }
+
             //If adding the distance to the connection is greater than the upper bound, don't consider it
             if (dist_traversed + dist_to_next >= distance * (1 + bound_factor)) {
                 continue;
@@ -95,7 +92,9 @@ pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>>
             //Update step count
             step_count++;
             //Recursively all function on the next node
-            best_path = findPaths(graph, start, distance, graph[curr_node][i].first, dist_traversed, curr_path, paths, visited, step_count, bound_factor);
+            best_path = findPaths(graph, start, distance, graph[curr_node][i].first,
+                                  dist_traversed, curr_path, paths, visited, step_count,
+                                  bound_factor);
 
             //Undo all that to try other connections
             visited[graph[curr_node][i].first] = false;
@@ -104,13 +103,46 @@ pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>>
             step_count--;
         }
     }
-    //If no path was found
     if (paths.empty()) {
-        //Return a pair representing nothing
         return {0.0, {}};
     }
     else {
-        //Otherwise, the path closest to the target distance is the last added to the list
         return paths.back();
+    }
+}
+
+void AdjList::PopulateFromFile(string filename) {
+    string fileLine;
+    ifstream infile(filename);
+
+    //Get startId
+    getline(infile, fileLine);
+    int startId = stoi(fileLine);
+
+    //Get distance
+    getline(infile, fileLine);
+    double distance = stod(fileLine);
+
+    //Get through first N line
+    getline(infile, fileLine);
+
+    while (getline(infile, fileLine)) {
+        //Get current node information
+        int currNodeId = stoi(fileLine);
+
+        //Loop through edge list of current node
+        while (getline(infile, fileLine)) {
+            //Check if beginning of new node's information
+            if (fileLine == "N")
+                break;
+
+            //Get edge information
+            int toNodeId = stoi(fileLine);
+            getline(infile, fileLine);
+            double dist = stod(fileLine);
+
+            //Insert edge
+            insertEdge(currNodeId, toNodeId, dist);
+        }
     }
 }
