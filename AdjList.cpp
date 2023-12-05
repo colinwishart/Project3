@@ -47,7 +47,7 @@ void AdjList::numEdges()
     cout << "Number of edges: " << tot << endl;
 }
 
-pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>> graph, int start, double distance, int curr_node,
+pair<double, vector<int>> AdjList::findPaths(map<int, vector<pair<int, double>>> &graph, int start, double distance, int curr_node,
                         double &dist_traversed, vector<int> &curr_path, vector<pair<double, vector<int>>> &paths,
                         map<int, bool> &visited, int &step_count, double &bound_factor) {
 
